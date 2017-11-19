@@ -187,12 +187,20 @@ class Music(Plugin):
 
         songFiles = sorted(songFiles)
 
-        for song in songFiles:
-            library += song
-            library += '\n'
+        await self.bot.send_message(channel, 'Songs: \n')
+        self.logger.debug('[library]: Songs: \n')
 
-        self.logger.debug('[songlist]: Songs: %s', library)
-        await self.bot.send_message(channel, 'Songs: \n' + library)
+        for song in songFiles:
+            if len(library) + len(song + '\n') < 2000:
+                library += song + '\n'
+            else:
+                self.logger.debug(library)
+                await self.bot.send_message(channel, library)
+                library = '';
+
+        if library:
+            self.logger.debug(library)
+            await self.bot.send_message(channel, library)
 
     @styrobot.plugincommand('Display the list of queued songs', name='queue')
     async def _queue_(self, server, channel, author):
